@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MANU AI STORY STUDIO</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f1ff;
+  color: #29213b;
+}
+header {
+  background: #5839a5;
+  color: white;
+  padding: 24px 16px;
+  text-align: center;
+}
+main {
+  max-width: 700px;
+  margin: auto;
+  padding: 16px;
+}
+.card {
+  background: white;
+  padding: 18px;
+  margin: 16px 0;
+  border-radius: 16px;
+  box-shadow: 0 3px 12px #0001;
+}
+input, textarea, select, button {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  margin: 7px 0;
+  border-radius: 9px;
+  border: 1px solid #c9bedf;
+  font-size: 16px;
+}
+button {
+  background: #5839a5;
+  color: white;
+  border: 0;
+  font-weight: bold;
+}
+.small {
+  font-size: 13px;
+  color: #665b78;
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>✨ MANU AI STORY STUDIO</h1>
+  <p>Your original kids' story creation workspace</p>
+</header>
+
+<main>
+  <div class="card">
+    <h2>📖 Story Planner</h2>
+    <label>Story title</label>
+    <input id="title" placeholder="Enter your story title">
+
+    <label>Story idea</label>
+    <textarea id="idea" rows="4" placeholder="Describe your original story idea"></textarea>
+
+    <label>Video format</label>
+    <select id="format">
+      <option>1-minute Short</option>
+      <option>15-minute Story</option>
+    </select>
+
+    <button onclick="saveStory()">Save Story Project</button>
+    <p id="status"></p>
+  </div>
+
+  <div class="card">
+    <h2>🧒 Character Bible</h2>
+    <input id="character" placeholder="Character name">
+    <textarea id="details" rows="3" placeholder="Face, hair, personality, clothes, voice and signature accessory"></textarea>
+    <button onclick="saveCharacter()">Save Character</button>
+    <p id="characterStatus"></p>
+  </div>
+
+  <div class="card">
+    <h2>📚 Saved Projects</h2>
+    <div id="projects">No projects saved yet.</div>
+  </div>
+
+  <div class="card">
+    <h2>⚠️ Important</h2>
+    <p>This is the first web-app prototype. It saves story and character notes in this browser.</p>
+    <p>AI video generation, automatic quality checks, YouTube connection and KDP publishing are not connected yet.</p>
+    <p class="small">Created for MANU AI STORY STUDIO.</p>
+  </div>
+</main>
+
+<script>
+function getData(key) {
+  try { return JSON.parse(localStorage.getItem(key) || "[]"); }
+  catch(e) { return []; }
+}
+
+function saveStory() {
+  const title = document.getElementById("title").value.trim();
+  const idea = document.getElementById("idea").value.trim();
+  const format = document.getElementById("format").value;
+
+  if (!title || !idea) {
+    document.getElementById("status").textContent =
+      "Please enter a title and story idea.";
+    return;
+  }
+
+  const projects = getData("manuStories");
+  projects.push({title, idea, format, date: new Date().toLocaleString()});
+  localStorage.setItem("manuStories", JSON.stringify(projects));
+  document.getElementById("status").textContent = "Story project saved!";
+  document.getElementById("title").value = "";
+  document.getElementById("idea").value = "";
+  showProjects();
+}
+
+function saveCharacter() {
+  const name = document.getElementById("character").value.trim();
+  const details = document.getElementById("details").value.trim();
+
+  if (!name || !details) {
+    document.getElementById("characterStatus").textContent =
+      "Please enter the character name and details.";
+    return;
+  }
+
+  const characters = getData("manuCharacters");
+  characters.push({name, details});
+  localStorage.setItem("manuCharacters", JSON.stringify(characters));
+  document.getElementById("characterStatus").textContent = "Character saved!";
+  document.getElementById("character").value = "";
+  document.getElementById("details").value = "";
+}
+
+function showProjects() {
+  const projects = getData("manuStories");
+  const box = document.getElementById("projects");
+
+  if (!projects.length) {
+    box.textContent = "No projects saved yet.";
+    return;
+  }
+
+  box.innerHTML = "";
+  projects.forEach((p) => {
+    const item = document.createElement("div");
+    item.className = "card";
+    const heading = document.createElement("h3");
+    heading.textContent = p.title;
+    const desc = document.createElement("p");
+    desc.textContent = p.idea;
+    const format = document.createElement("p");
+    format.textContent = p.format + " · " + p.date;
+    item.append(heading, desc, format);
+    box.appendChild(item);
+  });
+}
+
+showProjects();
+</script>
+</body>
+</html>
